@@ -1,0 +1,63 @@
+@page
+@model ConfirmOrderModel
+
+<h1>Order for @Model.SchoolName</h1>
+
+<form method="post">
+@for (var i = 0; i < Model.Lines.Count; i++)
+{
+    <div class="order-line">
+
+        <span>
+            @Model.Lines[i].Sku - @Model.Lines[i].Embroidery
+        </span>
+
+        <input
+            type="number"
+            min="0"
+            asp-for="Lines[i].Quantity"
+            data-price="@Model.Lines[i].UnitPrice"
+            class="quantity-input" />
+
+    </div>
+}
+
+<div id="subtotal">
+    Subtotal: £@Model.Subtotal
+</div>
+
+<button type="submit">
+    Confirm
+</button>
+</form>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const quantityInputs =
+        document.querySelectorAll(".quantity-input");
+
+    const subtotalElement =
+        document.getElementById("subtotal");
+
+    function updateSubtotal() {
+
+        let subtotal = 0;
+
+        quantityInputs.forEach(input => {
+
+            const quantity = Number(input.value);
+            const price = Number(input.dataset.price);
+
+            subtotal += quantity * price;
+        });
+
+        subtotalElement.textContent =
+            `Subtotal: £${subtotal.toFixed(2)}`;
+    }
+
+    quantityInputs.forEach(input => {
+        input.addEventListener("input", updateSubtotal);
+    });
+});
+</script>
